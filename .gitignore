@@ -1,0 +1,36 @@
+node_modules/
+dist/
+*.log
+.env
+.env.local
+/backend/dist/
+/frontend/dist/
+/shared/dist/
+*.tsbuildinfo
+.DS_Store
+
+# Local dev-tool state — not part of the app, and some of it (deploy skill
+# notes, permission grants) references a real lab hostname/IP.
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+.mimocode/
+
+# Browser session snapshots from interactive Playwright MCP testing —
+# transient debugging artifacts, not test fixtures, and some contain real
+# lab environment details.
+.playwright-mcp/
+
+# Build output for the single-binary (Node SEA) release, see
+# packaging/build-binary.sh — always regenerated, never hand-edited.
+packaging/build/
+
+# Microsoft's own ADMX/ADML installer — copyrighted, not ours to
+# redistribute. install.sh reads it from here if present (optional; the
+# app works without it, see docs/install.md) but never ships it.
+packaging/*.msi
+packaging/*.cab
+
+# Ad-hoc research/scratch directory (extracted MSI/CAB dumps), unrelated to
+# the app's build or runtime.
+/admx-templates/
+/packaging/admx-windows/

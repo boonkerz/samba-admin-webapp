@@ -1,0 +1,88 @@
+{
+  "common": {
+    "loggedInAs": "Logged in as {{username}}",
+    "close": "Close"
+  },
+  "nav": {
+    "activeDirectory": "Active Directory",
+    "groupPolicy": "Group Policy",
+    "dns": "DNS",
+    "sites": "Sites and Services",
+    "logout": "Sign out",
+    "auditLog": "Audit Log",
+    "health": "Server Status",
+    "print": "Printers"
+  },
+  "auditLog": {
+    "title": "Audit Log",
+    "allUsers": "All users",
+    "allActions": "All actions",
+    "searchPlaceholder": "Search...",
+    "time": "Time",
+    "user": "User",
+    "action": "Action",
+    "target": "Target",
+    "detail": "Detail",
+    "empty": "No entries."
+  },
+  "health": {
+    "title": "Server Status",
+    "loading": "Loading...",
+    "general": "General",
+    "hostname": "Hostname",
+    "sambaVersion": "Samba Version",
+    "uptime": "Uptime",
+    "sambaService": "Samba AD DC Service",
+    "timeSync": "Time Synchronization",
+    "active": "Active",
+    "inactive": "Inactive",
+    "noTimeSync": "No service active",
+    "timeSyncByHost": "Inherited from host",
+    "disk": "Disk Space",
+    "mount": "Mount Point",
+    "size": "Size",
+    "used": "Used",
+    "avail": "Available",
+    "usePercent": "Usage",
+    "fsmoTitle": "FSMO Roles",
+    "fsmo": {
+      "schemaMaster": "Schema Master",
+      "domainNamingMaster": "Domain Naming Master",
+      "pdcEmulator": "PDC Emulator",
+      "ridMaster": "RID Master",
+      "infrastructureMaster": "Infrastructure Master",
+      "domainDnsZonesMaster": "Domain DNS Zones Master",
+      "forestDnsZonesMaster": "Forest DNS Zones Master"
+    },
+    "replicationTitle": "Replication",
+    "noReplicationPartners": "No replication partners (single DC).",
+    "direction": "Direction",
+    "sourceDsa": "Source DSA",
+    "lastSuccess": "Last Success",
+    "failures": "Failures",
+    "dbcheckTitle": "Database Check (dbcheck)",
+    "dbcheckSummary": "{{checked}} objects checked",
+    "noErrors": "No errors",
+    "errorsFound": "{{count}} errors",
+    "dbcheckNotes": "{{count}} notes",
+    "generatedAt": "As of: {{date}}"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggleTitle": "Appearance: {{mode}} (click to change)"
+  },
+  "language": {
+    "label": "Language",
+    "de": "German",
+    "en": "English"
+  },
+  "login": {
+    "title": "Active Directory Sign-In",
+    "subtitle": "Sign in with a domain administrator account",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Sign in"
+  }
+}

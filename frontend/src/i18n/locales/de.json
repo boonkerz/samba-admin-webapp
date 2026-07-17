@@ -1,0 +1,88 @@
+{
+  "common": {
+    "loggedInAs": "Angemeldet als {{username}}",
+    "close": "Schließen"
+  },
+  "nav": {
+    "activeDirectory": "Active Directory",
+    "groupPolicy": "Gruppenrichtlinien",
+    "dns": "DNS",
+    "sites": "Standorte und Dienste",
+    "logout": "Abmelden",
+    "auditLog": "Protokoll",
+    "health": "Serverstatus",
+    "print": "Drucker"
+  },
+  "auditLog": {
+    "title": "Protokoll",
+    "allUsers": "Alle Benutzer",
+    "allActions": "Alle Aktionen",
+    "searchPlaceholder": "Suchen...",
+    "time": "Zeitpunkt",
+    "user": "Benutzer",
+    "action": "Aktion",
+    "target": "Ziel",
+    "detail": "Details",
+    "empty": "Keine Einträge."
+  },
+  "health": {
+    "title": "Serverstatus",
+    "loading": "Lade...",
+    "general": "Allgemein",
+    "hostname": "Hostname",
+    "sambaVersion": "Samba-Version",
+    "uptime": "Laufzeit",
+    "sambaService": "Samba-AD-DC-Dienst",
+    "timeSync": "Zeitsynchronisation",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "noTimeSync": "Kein Dienst aktiv",
+    "timeSyncByHost": "Vom Host übernommen",
+    "disk": "Speicherplatz",
+    "mount": "Einhängepunkt",
+    "size": "Größe",
+    "used": "Belegt",
+    "avail": "Verfügbar",
+    "usePercent": "Belegung",
+    "fsmoTitle": "FSMO-Rollen",
+    "fsmo": {
+      "schemaMaster": "Schemamaster",
+      "domainNamingMaster": "Domänennamensmaster",
+      "pdcEmulator": "PDC-Emulator",
+      "ridMaster": "RID-Master",
+      "infrastructureMaster": "Infrastrukturmaster",
+      "domainDnsZonesMaster": "Domänen-DNS-Zonenmaster",
+      "forestDnsZonesMaster": "Gesamtstruktur-DNS-Zonenmaster"
+    },
+    "replicationTitle": "Replikation",
+    "noReplicationPartners": "Keine Replikationspartner (Einzel-DC).",
+    "direction": "Richtung",
+    "sourceDsa": "Quell-DSA",
+    "lastSuccess": "Letzter Erfolg",
+    "failures": "Fehlversuche",
+    "dbcheckTitle": "Datenbankprüfung (dbcheck)",
+    "dbcheckSummary": "{{checked}} Objekte geprüft",
+    "noErrors": "Keine Fehler",
+    "errorsFound": "{{count}} Fehler",
+    "dbcheckNotes": "{{count}} Hinweise",
+    "generatedAt": "Stand: {{date}}"
+  },
+  "theme": {
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System",
+    "toggleTitle": "Darstellung: {{mode}} (klicken zum Wechseln)"
+  },
+  "language": {
+    "label": "Sprache",
+    "de": "Deutsch",
+    "en": "Englisch"
+  },
+  "login": {
+    "title": "Active Directory Anmeldung",
+    "subtitle": "Mit Domain-Administrator-Konto anmelden",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "submit": "Anmelden"
+  }
+}

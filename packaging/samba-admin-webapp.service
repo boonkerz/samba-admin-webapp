@@ -1,0 +1,19 @@
+[Unit]
+Description=Samba AD DC Setup Wizard & Management Web App
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Requires root: apt-get, systemctl, samba-tool, reading /var/lib/samba/private/*
+User=root
+WorkingDirectory=/opt/samba-admin-webapp
+ExecStart=/opt/samba-admin-webapp/samba-admin-webapp
+Restart=on-failure
+RestartSec=2
+
+Environment=SAMBA_ADMIN_FRONTEND_DIST=/opt/samba-admin-webapp/frontend/dist
+Environment=SAMBA_ADMIN_SCRIPTS_DIR=/opt/samba-admin-webapp/scripts
+
+[Install]
+WantedBy=multi-user.target
