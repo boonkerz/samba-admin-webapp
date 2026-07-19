@@ -1,14 +1,23 @@
 import type { ReactNode } from "react";
-
-const STEPS = ["Pakete", "Konfiguration", "Druckserver", "Fertig"];
+import { useTranslation } from "react-i18next";
 
 export function WizardLayout({ activeStep, children }: { activeStep: number; children: ReactNode }) {
+  const { t } = useTranslation();
+  const STEPS = [
+    t("wizard.steps.packages", "Pakete"),
+    t("wizard.steps.config", "Konfiguration"),
+    t("wizard.steps.printServer", "Druckserver"),
+    t("wizard.steps.finish", "Fertig"),
+  ];
+
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-4 py-12">
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Samba Active Directory Einrichtung</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+          {t("wizard.title", "Samba Active Directory Einrichtung")}
+        </h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Diesen Server in einen Active Directory Domain Controller umwandeln.
+          {t("wizard.subtitle", "Diesen Server in einen Active Directory Domain Controller umwandeln.")}
         </p>
       </div>
 

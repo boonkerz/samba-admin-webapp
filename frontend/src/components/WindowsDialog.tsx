@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Chrome that mimics the classic Windows "New Object" MMC dialogs (blue
@@ -34,6 +35,7 @@ export function WindowsDialog({
   children: ReactNode;
   maxWidthClassName?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
       <div className={`flex max-h-[90vh] w-full ${maxWidthClassName} flex-col overflow-hidden rounded-sm shadow-2xl ring-1 ring-black/20`}>
@@ -42,7 +44,7 @@ export function WindowsDialog({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Schließen"
+            aria-label={t("common.close", "Schließen")}
             className="flex h-5 w-6 items-center justify-center rounded-sm text-sm text-white/90 hover:bg-red-600 hover:text-white"
           >
             ×

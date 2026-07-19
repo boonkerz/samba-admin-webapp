@@ -1,8 +1,10 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useJobStream } from "../api/useJobStream";
 import { LogConsole } from "../components/LogConsole";
 
 export function StepJoinRun({ jobId, onDone }: { jobId: string; onDone: () => void }) {
+  const { t } = useTranslation();
   const stream = useJobStream(jobId);
 
   useEffect(() => {
@@ -11,10 +13,12 @@ export function StepJoinRun({ jobId, onDone }: { jobId: string; onDone: () => vo
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">Server tritt der Domäne bei…</h2>
+      <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">{t("wizard.joinRun.title", "Server tritt der Domäne bei…")}</h2>
       <LogConsole lines={stream.lines} />
       {stream.status === "failed" && (
-        <p className="text-sm text-red-600 dark:text-red-400">Domänenbeitritt fehlgeschlagen (Exit-Code {stream.exitCode}). Bitte Log prüfen.</p>
+        <p className="text-sm text-red-600 dark:text-red-400">
+          {t("wizard.joinRun.failed", "Domänenbeitritt fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen.", { code: stream.exitCode })}
+        </p>
       )}
     </div>
   );

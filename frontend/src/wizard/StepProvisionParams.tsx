@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ProvisionParams, ProvisionValidationResult } from "@samba-admin/shared";
 import { api } from "../api/client";
 import { Button } from "../components/Button";
@@ -6,6 +7,7 @@ import { Field, TextInput } from "../components/Field";
 import { Spinner } from "../components/Spinner";
 
 export function StepProvisionParams({ onStarted }: { onStarted: (jobId: string) => void }) {
+  const { t } = useTranslation();
   const [realm, setRealm] = useState("");
   const [domain, setDomain] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
@@ -42,21 +44,21 @@ export function StepProvisionParams({ onStarted }: { onStarted: (jobId: string) 
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">Domäne konfigurieren</h2>
+      <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">{t("wizard.provision.title", "Domäne konfigurieren")}</h2>
 
-      <Field label="Realm (z. B. CORP.EXAMPLE.COM)" error={errors.realm}>
+      <Field label={t("wizard.provision.realmLabel", "Realm (z. B. CORP.EXAMPLE.COM)")} error={errors.realm}>
         <TextInput value={realm} onChange={(e) => setRealm(e.target.value)} placeholder="CORP.EXAMPLE.COM" />
       </Field>
 
-      <Field label="Domäne / NetBIOS-Name (z. B. CORP)" error={errors.domain}>
+      <Field label={t("wizard.provision.domainLabel", "Domäne / NetBIOS-Name (z. B. CORP)")} error={errors.domain}>
         <TextInput value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="CORP" />
       </Field>
 
-      <Field label="Administrator-Passwort" error={errors.adminPassword}>
+      <Field label={t("wizard.provision.adminPasswordLabel", "Administrator-Passwort")} error={errors.adminPassword}>
         <TextInput type="password" value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)} />
       </Field>
 
-      <Field label="Passwort bestätigen" error={errors.adminPasswordConfirm}>
+      <Field label={t("wizard.provision.confirmPasswordLabel", "Passwort bestätigen")} error={errors.adminPasswordConfirm}>
         <TextInput type="password" value={adminPasswordConfirm} onChange={(e) => setAdminPasswordConfirm(e.target.value)} />
       </Field>
 
@@ -64,7 +66,7 @@ export function StepProvisionParams({ onStarted }: { onStarted: (jobId: string) 
 
       <div className="flex justify-end">
         <Button onClick={submit} disabled={submitting}>
-          {submitting && <Spinner className="h-4 w-4" />} Domäne provisionieren
+          {submitting && <Spinner className="h-4 w-4" />} {t("wizard.provision.submit", "Domäne provisionieren")}
         </Button>
       </div>
     </div>

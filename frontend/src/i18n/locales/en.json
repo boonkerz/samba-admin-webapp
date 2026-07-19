@@ -1,7 +1,9 @@
 {
   "common": {
     "loggedInAs": "Logged in as {{username}}",
-    "close": "Close"
+    "close": "Close",
+    "cancel": "Cancel",
+    "checking": "Checking..."
   },
   "nav": {
     "activeDirectory": "Active Directory",
@@ -119,5 +121,124 @@
     "username": "Username",
     "password": "Password",
     "submit": "Sign in"
+  },
+  "wizard": {
+    "steps": {
+      "packages": "Packages",
+      "config": "Configuration",
+      "printServer": "Print Server",
+      "finish": "Finish"
+    },
+    "title": "Samba Active Directory Setup",
+    "subtitle": "Turn this server into an Active Directory Domain Controller.",
+    "modeSelect": {
+      "title": "Deployment Configuration",
+      "subtitle": "Choose what this server should be set up for.",
+      "provisionTitle": "Create a new forest",
+      "provisionDesc": "This server will become the first domain controller of a new Active Directory domain.",
+      "joinTitle": "Add this server to an existing domain",
+      "joinDesc": "This server will join an existing domain as an additional, replicating domain controller.",
+      "restoreTitle": "Restore from backup",
+      "restoreDesc": "Rebuilds a domain from a previously created backup (samba-tool domain backup) — for total loss of every domain controller."
+    },
+    "packages": {
+      "installing": "Installing packages…",
+      "installFailed": "Installation failed (exit code {{code}}). Please check the log.",
+      "title": "Check system & install packages",
+      "checking": "Checking system…",
+      "retry": "Retry",
+      "detectedLabel": "Detected:",
+      "hostnameLabel": "hostname",
+      "autoFix": "Fix issues automatically",
+      "dnsBackend": "DNS backend",
+      "dnsInternal": "Samba internal DNS server (recommended)",
+      "dnsBind9": "BIND9 with DLZ integration",
+      "install": "Install packages"
+    },
+    "provision": {
+      "title": "Configure domain",
+      "realmLabel": "Realm (e.g. CORP.EXAMPLE.COM)",
+      "domainLabel": "Domain / NetBIOS name (e.g. CORP)",
+      "adminPasswordLabel": "Administrator password",
+      "confirmPasswordLabel": "Confirm password",
+      "submit": "Provision domain"
+    },
+    "provisionRun": {
+      "title": "Provisioning domain…",
+      "failed": "Provisioning failed (exit code {{code}}). Please check the log."
+    },
+    "join": {
+      "title": "Join an existing domain",
+      "realmLabel": "Realm of the existing domain (e.g. CORP.EXAMPLE.COM)",
+      "dcAddressLabel": "Address of an existing domain controller (IP or hostname)",
+      "usernameLabel": "Username (a domain account with join rights)",
+      "passwordLabel": "Password",
+      "submit": "Join domain"
+    },
+    "joinRun": {
+      "title": "Server is joining the domain…",
+      "failed": "Domain join failed (exit code {{code}}). Please check the log."
+    },
+    "restore": {
+      "title": "Restore from backup",
+      "fileLabel": "Backup file (.tar.bz2)",
+      "fileTypeError": "Please select a .tar.bz2 backup file.",
+      "serverNameLabel": "Server name (NetBIOS, max. 15 characters)",
+      "serverNameError": "1-15 letters/digits/hyphens, no dot.",
+      "hostIpLabel": "IP address (optional, auto-detected otherwise)",
+      "submit": "Restore"
+    },
+    "restoreRun": {
+      "title": "Restoring domain from backup…",
+      "failed": "Restore failed (exit code {{code}}). Please check the log."
+    },
+    "printServer": {
+      "setupTitle": "Setting up print server",
+      "title": "Print server (optional)",
+      "descriptionBefore": "Also set up this server as a print server (install CUPS, enable printer shares ",
+      "descriptionAfter": ")? This can also be done later at any time from the new \"Printers\" tab.",
+      "skip": "Skip",
+      "setUp": "Set up"
+    },
+    "finish": {
+      "title": "Domain set up successfully",
+      "realm": "Realm",
+      "domain": "Domain",
+      "hostname": "Hostname",
+      "ip": "IP address",
+      "rebootHint": "A reboot is recommended so all services start cleanly in the right order.",
+      "reboot": "Reboot now",
+      "continue": "Continue to sign-in"
+    }
+  },
+  "printServer": {
+    "enabling": "Setting up print server…",
+    "enableFailed": "Setup failed (exit code {{code}}). Please check the log.",
+    "ready": "Print server is set up and active.",
+    "descriptionBefore": "Sets up CUPS as the print service and enables the Samba shares ",
+    "descriptionAfter": ", so this server can provide printers and drivers to Windows clients.",
+    "setUp": "Set up"
+  },
+  "demote": {
+    "runningTitle": "Removing Domain Controller",
+    "succeeded": "Successfully removed. This server is no longer a domain controller — closing this will reload the page and show the setup wizard again.",
+    "failed": "Failed (exit code {{code}}). Please check the log.",
+    "title": "Remove Domain Controller",
+    "remove": "Remove",
+    "warning": "Warning: this permanently removes this server as a domain controller from the domain. The server can afterwards be re-provisioned or re-join a domain, but until then it is no longer a domain controller.",
+    "confirmPrompt": "There are currently {{count}} domain controllers in this domain. To confirm, please type this server's hostname:"
+  },
+  "backup": {
+    "title": "Backups",
+    "description": "Creates a full backup of the directory database (including all secrets) as a downloadable file. Can later be used via \"Restore from backup\" in the setup wizard on a new server.",
+    "create": "Create backup",
+    "created": "Backup created.",
+    "failed": "Failed (exit code {{code}}). Please check the log.",
+    "file": "File",
+    "size": "Size",
+    "createdAt": "Created",
+    "download": "Download",
+    "delete": "Delete",
+    "none": "No backups yet."
   }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { PrintServerStatus } from "@samba-admin/shared";
 import { api } from "../api/client";
@@ -13,6 +14,7 @@ import { Spinner } from "../components/Spinner";
  * enable flow behaves identically wherever it's triggered from.
  */
 export function PrintServerEnablePanel({ onDone }: { onDone?: () => void }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [jobId, setJobId] = useState<string>();
   const [starting, setStarting] = useState(false);
@@ -47,11 +49,13 @@ export function PrintServerEnablePanel({ onDone }: { onDone?: () => void }) {
   if (jobId) {
     return (
       <div className="space-y-3">
-        <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100">Druckserver wird eingerichtet…</h3>
+        <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100">
+          {t("printServer.enabling", "Druckserver wird eingerichtet…")}
+        </h3>
         <LogConsole lines={stream.lines} />
         {stream.status === "failed" && (
           <p className="text-sm text-red-600 dark:text-red-400">
-            Einrichtung fehlgeschlagen (Exit-Code {stream.exitCode}). Bitte Log prüfen.
+            {t("printServer.enableFailed", "Einrichtung fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen.", { code: stream.exitCode })}
           </p>
         )}
       </div>
@@ -61,16 +65,20 @@ export function PrintServerEnablePanel({ onDone }: { onDone?: () => void }) {
   return (
     <div className="space-y-3">
       {statusQuery.data?.ready ? (
-        <p className="text-sm text-emerald-600 dark:text-emerald-400">Druckserver ist eingerichtet und aktiv.</p>
+        <p className="text-sm text-emerald-600 dark:text-emerald-400">{t("printServer.ready", "Druckserver ist eingerichtet und aktiv.")}</p>
       ) : (
         <>
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Richtet CUPS als Druckdienst ein und aktiviert die Samba-Freigaben <code>[printers]</code>/<code>[print$]</code>, damit dieser
-            Server Drucker und Treiber für Windows-Clients bereitstellen kann.
+            {t("printServer.descriptionBefore", "Richtet CUPS als Druckdienst ein und aktiviert die Samba-Freigaben ")}
+            <code>[printers]</code>/<code>[print$]</code>
+            {t(
+              "printServer.descriptionAfter",
+              ", damit dieser Server Drucker und Treiber für Windows-Clients bereitstellen kann."
+            )}
           </p>
           {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
           <Button onClick={startEnable} disabled={starting}>
-            {starting && <Spinner className="h-4 w-4" />} Einrichten
+            {starting && <Spinner className="h-4 w-4" />} {t("printServer.setUp", "Einrichten")}
           </Button>
         </>
       )}

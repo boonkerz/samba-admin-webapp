@@ -1,7 +1,9 @@
 {
   "common": {
     "loggedInAs": "Angemeldet als {{username}}",
-    "close": "Schließen"
+    "close": "Schließen",
+    "cancel": "Abbrechen",
+    "checking": "Prüfe..."
   },
   "nav": {
     "activeDirectory": "Active Directory",
@@ -119,5 +121,124 @@
     "username": "Benutzername",
     "password": "Passwort",
     "submit": "Anmelden"
+  },
+  "wizard": {
+    "steps": {
+      "packages": "Pakete",
+      "config": "Konfiguration",
+      "printServer": "Druckserver",
+      "finish": "Fertig"
+    },
+    "title": "Samba Active Directory Einrichtung",
+    "subtitle": "Diesen Server in einen Active Directory Domain Controller umwandeln.",
+    "modeSelect": {
+      "title": "Bereitstellungskonfiguration",
+      "subtitle": "Wähle, wozu dieser Server eingerichtet werden soll.",
+      "provisionTitle": "Neue Gesamtstruktur erstellen",
+      "provisionDesc": "Dieser Server wird der erste Domain Controller einer neuen Active-Directory-Domäne.",
+      "joinTitle": "Diesen Server einer bestehenden Domäne hinzufügen",
+      "joinDesc": "Dieser Server wird als zusätzlicher Domain Controller einer bereits vorhandenen Domäne beitreten (Replikation).",
+      "restoreTitle": "Aus Sicherung wiederherstellen",
+      "restoreDesc": "Baut eine Domäne aus einer zuvor erstellten Sicherung (samba-tool domain backup) neu auf — für den Fall eines vollständigen Ausfalls aller Domain Controller."
+    },
+    "packages": {
+      "installing": "Pakete werden installiert…",
+      "installFailed": "Installation fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen.",
+      "title": "System prüfen & Pakete installieren",
+      "checking": "Prüfe System…",
+      "retry": "Erneut versuchen",
+      "detectedLabel": "Erkannt:",
+      "hostnameLabel": "Hostname",
+      "autoFix": "Probleme automatisch beheben",
+      "dnsBackend": "DNS-Backend",
+      "dnsInternal": "Samba interner DNS-Server (empfohlen)",
+      "dnsBind9": "BIND9 mit DLZ-Integration",
+      "install": "Pakete installieren"
+    },
+    "provision": {
+      "title": "Domäne konfigurieren",
+      "realmLabel": "Realm (z. B. CORP.EXAMPLE.COM)",
+      "domainLabel": "Domäne / NetBIOS-Name (z. B. CORP)",
+      "adminPasswordLabel": "Administrator-Passwort",
+      "confirmPasswordLabel": "Passwort bestätigen",
+      "submit": "Domäne provisionieren"
+    },
+    "provisionRun": {
+      "title": "Domäne wird provisioniert…",
+      "failed": "Provisionierung fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen."
+    },
+    "join": {
+      "title": "Bestehender Domäne beitreten",
+      "realmLabel": "Realm der bestehenden Domäne (z. B. CORP.EXAMPLE.COM)",
+      "dcAddressLabel": "Adresse eines vorhandenen Domain Controllers (IP oder Hostname)",
+      "usernameLabel": "Benutzername (Domänenkonto mit Beitrittsrechten)",
+      "passwordLabel": "Passwort",
+      "submit": "Domäne beitreten"
+    },
+    "joinRun": {
+      "title": "Server tritt der Domäne bei…",
+      "failed": "Domänenbeitritt fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen."
+    },
+    "restore": {
+      "title": "Aus Sicherung wiederherstellen",
+      "fileLabel": "Sicherungsdatei (.tar.bz2)",
+      "fileTypeError": "Bitte eine .tar.bz2-Sicherungsdatei auswählen.",
+      "serverNameLabel": "Servername (NetBIOS, max. 15 Zeichen)",
+      "serverNameError": "1-15 Buchstaben/Ziffern/Bindestriche, kein Punkt.",
+      "hostIpLabel": "IP-Adresse (optional, wird sonst automatisch erkannt)",
+      "submit": "Wiederherstellen"
+    },
+    "restoreRun": {
+      "title": "Domäne wird aus Sicherung wiederhergestellt…",
+      "failed": "Wiederherstellung fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen."
+    },
+    "printServer": {
+      "setupTitle": "Druckserver einrichten",
+      "title": "Druckserver (optional)",
+      "descriptionBefore": "Diesen Server auch als Druckserver einrichten (CUPS installieren, Druckerfreigaben ",
+      "descriptionAfter": " aktivieren)? Dies lässt sich jederzeit später auch über den neuen \"Drucker\"-Reiter nachholen.",
+      "skip": "Überspringen",
+      "setUp": "Einrichten"
+    },
+    "finish": {
+      "title": "Domäne erfolgreich eingerichtet",
+      "realm": "Realm",
+      "domain": "Domäne",
+      "hostname": "Hostname",
+      "ip": "IP-Adresse",
+      "rebootHint": "Ein Neustart wird empfohlen, damit alle Dienste sauber in der richtigen Reihenfolge starten.",
+      "reboot": "Jetzt neu starten",
+      "continue": "Weiter zur Anmeldung"
+    }
+  },
+  "printServer": {
+    "enabling": "Druckserver wird eingerichtet…",
+    "enableFailed": "Einrichtung fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen.",
+    "ready": "Druckserver ist eingerichtet und aktiv.",
+    "descriptionBefore": "Richtet CUPS als Druckdienst ein und aktiviert die Samba-Freigaben ",
+    "descriptionAfter": ", damit dieser Server Drucker und Treiber für Windows-Clients bereitstellen kann.",
+    "setUp": "Einrichten"
+  },
+  "demote": {
+    "runningTitle": "Domain Controller wird entfernt",
+    "succeeded": "Erfolgreich entfernt. Dieser Server ist kein Domain Controller mehr — nach dem Schließen wird die Seite neu geladen und zeigt wieder den Einrichtungsassistenten.",
+    "failed": "Fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen.",
+    "title": "Domain Controller entfernen",
+    "remove": "Entfernen",
+    "warning": "Warnung: Dieser Vorgang entfernt diesen Server dauerhaft als Domain Controller aus der Domäne. Der Server kann anschließend neu provisioniert oder einer Domäne erneut beitreten, ist aber bis dahin kein Domain Controller mehr.",
+    "confirmPrompt": "Aktuell gibt es {{count}} Domain Controller in dieser Domäne. Zur Bestätigung bitte den Hostnamen dieses Servers eingeben:"
+  },
+  "backup": {
+    "title": "Sicherungen",
+    "description": "Erstellt eine vollständige Sicherung der Verzeichnisdatenbank (inkl. aller Geheimnisse) als Datei zum Download. Kann später über \"Aus Sicherung wiederherstellen\" im Einrichtungsassistenten auf einem neuen Server verwendet werden.",
+    "create": "Sicherung erstellen",
+    "created": "Sicherung erstellt.",
+    "failed": "Fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen.",
+    "file": "Datei",
+    "size": "Größe",
+    "createdAt": "Erstellt",
+    "download": "Herunterladen",
+    "delete": "Löschen",
+    "none": "Keine Sicherungen vorhanden."
   }
 }

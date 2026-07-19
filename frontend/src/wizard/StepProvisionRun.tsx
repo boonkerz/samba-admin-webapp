@@ -1,8 +1,10 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useJobStream } from "../api/useJobStream";
 import { LogConsole } from "../components/LogConsole";
 
 export function StepProvisionRun({ jobId, onDone }: { jobId: string; onDone: () => void }) {
+  const { t } = useTranslation();
   const stream = useJobStream(jobId);
 
   useEffect(() => {
@@ -11,10 +13,12 @@ export function StepProvisionRun({ jobId, onDone }: { jobId: string; onDone: () 
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">Domäne wird provisioniert…</h2>
+      <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">{t("wizard.provisionRun.title", "Domäne wird provisioniert…")}</h2>
       <LogConsole lines={stream.lines} />
       {stream.status === "failed" && (
-        <p className="text-sm text-red-600 dark:text-red-400">Provisionierung fehlgeschlagen (Exit-Code {stream.exitCode}). Bitte Log prüfen.</p>
+        <p className="text-sm text-red-600 dark:text-red-400">
+          {t("wizard.provisionRun.failed", "Provisionierung fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen.", { code: stream.exitCode })}
+        </p>
       )}
     </div>
   );

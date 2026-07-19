@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { DnsBackend, PreflightResponse } from "@samba-admin/shared";
 import { api } from "../api/client";
 import { useJobStream } from "../api/useJobStream";
@@ -8,6 +9,7 @@ import { LogConsole } from "../components/LogConsole";
 import { Spinner } from "../components/Spinner";
 
 export function StepPackages({ onDone }: { onDone: () => void }) {
+  const { t } = useTranslation();
   const [preflight, setPreflight] = useState<PreflightResponse>();
   const [loading, setLoading] = useState(true);
   const [dnsBackend, setDnsBackend] = useState<DnsBackend>("SAMBA_INTERNAL");
@@ -64,10 +66,12 @@ export function StepPackages({ onDone }: { onDone: () => void }) {
   if (jobId) {
     return (
       <div className="space-y-4">
-        <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">Pakete werden installiert…</h2>
+        <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">{t("wizard.packages.installing", "Pakete werden installiert…")}</h2>
         <LogConsole lines={stream.lines} />
         {stream.status === "failed" && (
-          <p className="text-sm text-red-600 dark:text-red-400">Installation fehlgeschlagen (Exit-Code {stream.exitCode}). Bitte Log prüfen.</p>
+          <p className="text-sm text-red-600 dark:text-red-400">
+            {t("wizard.packages.installFailed", "Installation fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen.", { code: stream.exitCode })}
+          </p>
         )}
       </div>
     );
@@ -75,25 +79,33 @@ export function StepPackages({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">System prüfen &amp; Pakete installieren</h2>
+      <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100">
+        {t("wizard.packages.title", "System prüfen & Pakete installieren")}
+      </h2>
 
       {loading && (
         <div className="flex items-center gap-2 text-sm text-slate-500">
-          <Spinner className="h-4 w-4" /> Prüfe System…
+          <Spinner className="h-4 w-4" /> {t("wizard.packages.checking", "Prüfe System…")}
         </div>
       )}
 
       {!loading && !preflight && error && (
         <div className="space-y-3">
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-          <Button variant="secondary" onClick={loadPreflight}>Erneut versuchen</Button>
+          <Button variant="secondary" onClick={loadPreflight}>
+            {t("wizard.packages.retry", "Erneut versuchen")}
+          </Button>
         </div>
       )}
 
       {preflight && !loading && (
         <>
           <div className="text-sm text-slate-600 dark:text-slate-400">
-            Erkannt: <span className="font-medium text-slate-900 dark:text-slate-100">{preflight.distro} {preflight.distroVersion}</span>, Hostname{" "}
+            {t("wizard.packages.detectedLabel", "Erkannt:")}{" "}
+            <span className="font-medium text-slate-900 dark:text-slate-100">
+              {preflight.distro} {preflight.distroVersion}
+            </span>
+            , {t("wizard.packages.hostnameLabel", "Hostname")}{" "}
             <span className="font-medium text-slate-900 dark:text-slate-100">{preflight.hostname}</span>
           </div>
 
@@ -111,14 +123,14 @@ export function StepPackages({ onDone }: { onDone: () => void }) {
 
           {fixableIds.length > 0 && (
             <Button variant="secondary" onClick={applyFixes}>
-              Probleme automatisch beheben
+              {t("wizard.packages.autoFix", "Probleme automatisch beheben")}
             </Button>
           )}
 
-          <Field label="DNS-Backend">
+          <Field label={t("wizard.packages.dnsBackend", "DNS-Backend")}>
             <Select value={dnsBackend} onChange={(e) => setDnsBackend(e.target.value as DnsBackend)}>
-              <option value="SAMBA_INTERNAL">Samba interner DNS-Server (empfohlen)</option>
-              <option value="BIND9_DLZ">BIND9 mit DLZ-Integration</option>
+              <option value="SAMBA_INTERNAL">{t("wizard.packages.dnsInternal", "Samba interner DNS-Server (empfohlen)")}</option>
+              <option value="BIND9_DLZ">{t("wizard.packages.dnsBind9", "BIND9 mit DLZ-Integration")}</option>
             </Select>
           </Field>
 
@@ -126,7 +138,7 @@ export function StepPackages({ onDone }: { onDone: () => void }) {
 
           <div className="flex justify-end">
             <Button onClick={startInstall} disabled={starting || blockingIssues.some((c) => !c.fixAvailable)}>
-              {starting && <Spinner className="h-4 w-4" />} Pakete installieren
+              {starting && <Spinner className="h-4 w-4" />} {t("wizard.packages.install", "Pakete installieren")}
             </Button>
           </div>
         </>

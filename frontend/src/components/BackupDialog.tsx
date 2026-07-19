@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { BackupFileInfo } from "@samba-admin/shared";
 import { api } from "../api/client";
@@ -9,6 +10,7 @@ import { useToastStore } from "../state/toastStore";
 
 /** Full domain backups (samba-tool domain backup online) — download for safekeeping, or feed into the setup wizard's "restore from backup" mode on a fresh server. */
 export function BackupDialog({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const pushToast = useToastStore((s) => s.push);
   const [jobId, setJobId] = useState<string>();
@@ -23,7 +25,7 @@ export function BackupDialog({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     if (stream.status === "succeeded") {
       queryClient.invalidateQueries({ queryKey: ["backups"] });
-      pushToast("success", "Sicherung erstellt.");
+      pushToast("success", t("backup.created", "Sicherung erstellt."));
     }
   }, [stream.status]);
 
@@ -53,38 +55,42 @@ export function BackupDialog({ onClose }: { onClose: () => void }) {
 
   return (
     <WindowsDialog
-      title="Sicherungen"
+      title={t("backup.title", "Sicherungen")}
       onClose={onClose}
       maxWidthClassName="max-w-3xl"
       footer={
         <WindowsButton onClick={onClose} disabled={running}>
-          Schließen
+          {t("common.close", "Schließen")}
         </WindowsButton>
       }
     >
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-4">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Erstellt eine vollständige Sicherung der Verzeichnisdatenbank (inkl. aller Geheimnisse) als Datei zum Download. Kann später über
-            "Aus Sicherung wiederherstellen" im Einrichtungsassistenten auf einem neuen Server verwendet werden.
+            {t(
+              "backup.description",
+              'Erstellt eine vollständige Sicherung der Verzeichnisdatenbank (inkl. aller Geheimnisse) als Datei zum Download. Kann später über "Aus Sicherung wiederherstellen" im Einrichtungsassistenten auf einem neuen Server verwendet werden.'
+            )}
           </p>
           <WindowsButton variant="primary" onClick={startBackup} disabled={starting || running}>
-            Sicherung erstellen
+            {t("backup.create", "Sicherung erstellen")}
           </WindowsButton>
         </div>
 
         {jobId && stream.lines.length > 0 && <LogConsole lines={stream.lines} />}
         {stream.status === "failed" && (
-          <p className="text-sm text-red-600 dark:text-red-400">Fehlgeschlagen (Exit-Code {stream.exitCode}). Bitte Log prüfen.</p>
+          <p className="text-sm text-red-600 dark:text-red-400">
+            {t("backup.failed", "Fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen.", { code: stream.exitCode })}
+          </p>
         )}
 
         <div className="max-h-80 overflow-y-auto rounded-sm border border-slate-300 dark:border-slate-600">
           <table className="min-w-full text-sm">
             <thead className="sticky top-0 bg-slate-100 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-800 dark:text-slate-400">
               <tr>
-                <th className="px-2 py-1">Datei</th>
-                <th className="px-2 py-1">Größe</th>
-                <th className="px-2 py-1">Erstellt</th>
+                <th className="px-2 py-1">{t("backup.file", "Datei")}</th>
+                <th className="px-2 py-1">{t("backup.size", "Größe")}</th>
+                <th className="px-2 py-1">{t("backup.createdAt", "Erstellt")}</th>
                 <th className="px-2 py-1" />
               </tr>
             </thead>
@@ -103,10 +109,10 @@ export function BackupDialog({ onClose }: { onClose: () => void }) {
                       className="mr-3 text-indigo-600 hover:underline dark:text-indigo-400"
                       href={`/api/backup/download/${encodeURIComponent(b.filename)}`}
                     >
-                      Herunterladen
+                      {t("backup.download", "Herunterladen")}
                     </a>
                     <button className="text-red-600 hover:underline dark:text-red-400" onClick={() => removeBackup(b.filename)}>
-                      Löschen
+                      {t("backup.delete", "Löschen")}
                     </button>
                   </td>
                 </tr>
@@ -114,7 +120,7 @@ export function BackupDialog({ onClose }: { onClose: () => void }) {
               {!backupsQuery.isLoading && backups.length === 0 && (
                 <tr>
                   <td colSpan={4} className="px-2 py-4 text-center text-slate-400">
-                    Keine Sicherungen vorhanden.
+                    {t("backup.none", "Keine Sicherungen vorhanden.")}
                   </td>
                 </tr>
               )}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import type { DemoteEligibility } from "@samba-admin/shared";
 import { api } from "../api/client";
@@ -8,6 +9,7 @@ import { LogConsole } from "./LogConsole";
 
 /** "Remove a domain controller" — the counterpart to the setup wizard's join step. Reachable from the danger zone in Server Status. */
 export function DemoteDialog({ hostname, onClose }: { hostname: string; onClose: () => void }) {
+  const { t } = useTranslation();
   const [confirmText, setConfirmText] = useState("");
   const [jobId, setJobId] = useState<string>();
   const [starting, setStarting] = useState(false);
@@ -41,11 +43,11 @@ export function DemoteDialog({ hostname, onClose }: { hostname: string; onClose:
   if (jobId) {
     return (
       <WindowsDialog
-        title="Domain Controller wird entfernt"
+        title={t("demote.runningTitle", "Domain Controller wird entfernt")}
         onClose={running ? () => {} : succeeded ? () => window.location.reload() : onClose}
         footer={
           <WindowsButton onClick={succeeded ? () => window.location.reload() : onClose} disabled={running}>
-            Schließen
+            {t("common.close", "Schließen")}
           </WindowsButton>
         }
       >
@@ -53,12 +55,16 @@ export function DemoteDialog({ hostname, onClose }: { hostname: string; onClose:
           <LogConsole lines={stream.lines} />
           {stream.status === "succeeded" && (
             <p className="text-sm text-emerald-600 dark:text-emerald-400">
-              Erfolgreich entfernt. Dieser Server ist kein Domain Controller mehr — nach dem Schließen wird die Seite neu geladen und zeigt
-              wieder den Einrichtungsassistenten.
+              {t(
+                "demote.succeeded",
+                "Erfolgreich entfernt. Dieser Server ist kein Domain Controller mehr — nach dem Schließen wird die Seite neu geladen und zeigt wieder den Einrichtungsassistenten."
+              )}
             </p>
           )}
           {stream.status === "failed" && (
-            <p className="text-sm text-red-600 dark:text-red-400">Fehlgeschlagen (Exit-Code {stream.exitCode}). Bitte Log prüfen.</p>
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {t("demote.failed", "Fehlgeschlagen (Exit-Code {{code}}). Bitte Log prüfen.", { code: stream.exitCode })}
+            </p>
           )}
         </div>
       </WindowsDialog>
@@ -67,32 +73,37 @@ export function DemoteDialog({ hostname, onClose }: { hostname: string; onClose:
 
   return (
     <WindowsDialog
-      title="Domain Controller entfernen"
+      title={t("demote.title", "Domain Controller entfernen")}
       onClose={onClose}
       footer={
         <>
           <WindowsButton disabled={!eligibility?.eligible || !confirmed || starting} onClick={startDemote}>
-            Entfernen
+            {t("demote.remove", "Entfernen")}
           </WindowsButton>
-          <WindowsButton onClick={onClose}>Abbrechen</WindowsButton>
+          <WindowsButton onClick={onClose}>{t("common.cancel", "Abbrechen")}</WindowsButton>
         </>
       }
     >
       <div className="space-y-3">
         <p className="text-sm font-medium text-red-600 dark:text-red-400">
-          Warnung: Dieser Vorgang entfernt diesen Server dauerhaft als Domain Controller aus der Domäne. Der Server kann anschließend neu
-          provisioniert oder einer Domäne erneut beitreten, ist aber bis dahin kein Domain Controller mehr.
+          {t(
+            "demote.warning",
+            "Warnung: Dieser Vorgang entfernt diesen Server dauerhaft als Domain Controller aus der Domäne. Der Server kann anschließend neu provisioniert oder einer Domäne erneut beitreten, ist aber bis dahin kein Domain Controller mehr."
+          )}
         </p>
 
-        {eligibilityQuery.isLoading && <p className="text-sm text-slate-500 dark:text-slate-400">Prüfe...</p>}
+        {eligibilityQuery.isLoading && <p className="text-sm text-slate-500 dark:text-slate-400">{t("common.checking", "Prüfe...")}</p>}
 
         {eligibility && !eligibility.eligible && <p className="text-sm text-red-600 dark:text-red-400">{eligibility.reason}</p>}
 
         {eligibility?.eligible && (
           <>
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Aktuell gibt es {eligibility.dcCount} Domain Controller in dieser Domäne. Zur Bestätigung bitte den Hostnamen dieses Servers
-              eingeben:
+              {t(
+                "demote.confirmPrompt",
+                "Aktuell gibt es {{count}} Domain Controller in dieser Domäne. Zur Bestätigung bitte den Hostnamen dieses Servers eingeben:",
+                { count: eligibility.dcCount }
+              )}
             </p>
             <div>
               <WinLabel>{hostname}</WinLabel>
