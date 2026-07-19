@@ -293,7 +293,8 @@
     "fullControl": "Vollzugriff",
     "readExecute": "Lesen und Ausführen",
     "write": "Schreiben",
-    "savedFsPermissions": "Dateisystemberechtigungen aktualisiert."
+    "savedFsPermissions": "Dateisystemberechtigungen aktualisiert.",
+    "browse": "Durchsuchen..."
   },
   "objectPicker": {
     "title": "Benutzer oder Gruppe auswählen",
@@ -304,5 +305,13 @@
     "user": "Benutzer",
     "group": "Gruppe",
     "noMatches": "Keine Treffer."
+  },
+  "folderBrowser": {
+    "title": "Nach Ordner suchen",
+    "select": "Auswählen",
+    "empty": "Keine Unterordner.",
+    "newFolderPlaceholder": "Ordnername",
+    "createFolder": "Erstellen",
+    "newFolder": "Neuer Ordner..."
   }
 }

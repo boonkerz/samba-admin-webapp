@@ -8,6 +8,7 @@ import { initSseResponse, writeSseEvent } from "../sse/sseHub.js";
 import { createFileShare, deleteFileShare, getFileShare, listFileShares, updateFileShare, validateFileShareParams } from "./fileshares.service.js";
 import { getShareAcl, setShareAcl } from "./shareAcl.service.js";
 import { getFsAcl, setFsAcl } from "./fsAcl.service.js";
+import { browseFolder, createFolder } from "./folderBrowser.service.js";
 
 export const fileSharesRouter = Router();
 
@@ -140,6 +141,27 @@ fileSharesRouter.put("/:name/fs-acl", async (req, res, next) => {
     await setFsAcl(share.path, entries);
     auditLog(actor(req), "fileshare-set-fs-permissions", req.params.name);
     res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// "Browse For Folder" equivalent for picking a share's path — read-only
+// listing plus an optional "New Folder" action, no job/audit needed.
+fileSharesRouter.get("/browse/list", (req, res, next) => {
+  try {
+    res.json(browseFolder(String(req.query.path ?? "/")));
+  } catch (err) {
+    next(err);
+  }
+});
+
+fileSharesRouter.post("/browse/mkdir", (req, res, next) => {
+  try {
+    const { parentPath, name } = req.body as { parentPath: string; name: string };
+    const created = createFolder(parentPath, name);
+    auditLog(actor(req), "fileshare-create-folder", created);
+    res.json(browseFolder(created));
   } catch (err) {
     next(err);
   }

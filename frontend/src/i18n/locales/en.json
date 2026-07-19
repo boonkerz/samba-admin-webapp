@@ -293,7 +293,8 @@
     "fullControl": "Full Control",
     "readExecute": "Read & Execute",
     "write": "Write",
-    "savedFsPermissions": "Filesystem permissions updated."
+    "savedFsPermissions": "Filesystem permissions updated.",
+    "browse": "Browse..."
   },
   "objectPicker": {
     "title": "Select User or Group",
@@ -304,5 +305,13 @@
     "user": "User",
     "group": "Group",
     "noMatches": "No matches."
+  },
+  "folderBrowser": {
+    "title": "Browse For Folder",
+    "select": "Select",
+    "empty": "No subfolders.",
+    "newFolderPlaceholder": "Folder name",
+    "createFolder": "Create",
+    "newFolder": "New Folder..."
   }
 }

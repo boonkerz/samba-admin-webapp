@@ -66,3 +66,15 @@ export interface FsAclInfo {
   isDirectory: boolean;
   entries: FsAclEntry[];
 }
+
+/** Windows' "Browse For Folder" dialog equivalent — lists only subdirectories (a share's path must be a directory), never files. */
+export interface FolderBrowseResult {
+  path: string;
+  parentPath: string | null;
+  entries: string[];
+}
+
+export interface CreateFolderRequest {
+  parentPath: string;
+  name: string;
+}

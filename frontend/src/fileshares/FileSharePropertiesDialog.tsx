@@ -16,6 +16,7 @@ import { WindowsDialog, WindowsButton, WinInput, WinLabel, WinSelect, WinCheckbo
 import { LogConsole } from "../components/LogConsole";
 import { useToastStore } from "../state/toastStore";
 import { ObjectPickerDialog, type PickedObject } from "../components/ObjectPickerDialog";
+import { FolderBrowserDialog } from "./FolderBrowserDialog";
 
 const TABS: WinTab[] = [
   { id: "general", label: "General" },
@@ -64,6 +65,7 @@ function GeneralTab({ share }: { share: FileShareSummary }) {
   const [jobId, setJobId] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string>();
+  const [showBrowser, setShowBrowser] = useState(false);
   const stream = useJobStream(jobId, "/api/fileshares");
 
   useEffect(() => {
@@ -93,7 +95,12 @@ function GeneralTab({ share }: { share: FileShareSummary }) {
     <div className="space-y-3">
       <div>
         <WinLabel>{t("fileShares.pathLabel", "Folder path:")}</WinLabel>
-        <WinInput value={path} onChange={(e) => setPath(e.target.value)} disabled={running} />
+        <div className="flex gap-2">
+          <WinInput value={path} onChange={(e) => setPath(e.target.value)} disabled={running} className="flex-1" />
+          <WindowsButton type="button" disabled={running} onClick={() => setShowBrowser(true)}>
+            {t("fileShares.browse", "Browse...")}
+          </WindowsButton>
+        </div>
       </div>
       <div>
         <WinLabel>{t("fileShares.commentLabel", "Description (optional):")}</WinLabel>
@@ -122,6 +129,16 @@ function GeneralTab({ share }: { share: FileShareSummary }) {
         <p className="text-sm text-red-600 dark:text-red-400">
           {t("fileShares.updateFailed", "Failed (exit code {{code}}). Please check the log.", { code: stream.exitCode })}
         </p>
+      )}
+      {showBrowser && (
+        <FolderBrowserDialog
+          initialPath={path || "/"}
+          onClose={() => setShowBrowser(false)}
+          onSelect={(selected) => {
+            setPath(selected);
+            setShowBrowser(false);
+          }}
+        />
       )}
     </div>
   );

@@ -7,6 +7,7 @@ import { useJobStream } from "../api/useJobStream";
 import { WindowsDialog, WindowsButton, WinInput, WinLabel, WinCheckbox } from "../components/WindowsDialog";
 import { LogConsole } from "../components/LogConsole";
 import { useToastStore } from "../state/toastStore";
+import { FolderBrowserDialog } from "./FolderBrowserDialog";
 
 export function NewFileShareDialog({ onDone }: { onDone: () => void }) {
   const { t } = useTranslation();
@@ -21,6 +22,7 @@ export function NewFileShareDialog({ onDone }: { onDone: () => void }) {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string>();
   const [jobId, setJobId] = useState<string>();
+  const [showBrowser, setShowBrowser] = useState(false);
   const stream = useJobStream(jobId, "/api/fileshares");
 
   useEffect(() => {
@@ -89,7 +91,12 @@ export function NewFileShareDialog({ onDone }: { onDone: () => void }) {
           </div>
           <div>
             <WinLabel>{t("fileShares.pathLabel", "Folder path:")}</WinLabel>
-            <WinInput value={path} onChange={(e) => setPath(e.target.value)} placeholder="/srv/shares/example" />
+            <div className="flex gap-2">
+              <WinInput value={path} onChange={(e) => setPath(e.target.value)} placeholder="/srv/shares/example" className="flex-1" />
+              <WindowsButton type="button" onClick={() => setShowBrowser(true)}>
+                {t("fileShares.browse", "Browse...")}
+              </WindowsButton>
+            </div>
             {errors.path && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.path}</p>}
           </div>
           <div>
@@ -100,6 +107,16 @@ export function NewFileShareDialog({ onDone }: { onDone: () => void }) {
           <WinCheckbox label={t("fileShares.readOnlyLabel", "Read-only")} checked={readOnly} onChange={(e) => setReadOnly(e.target.checked)} />
           {serverError && <p className="text-sm text-red-600 dark:text-red-400">{serverError}</p>}
         </div>
+      )}
+      {showBrowser && (
+        <FolderBrowserDialog
+          initialPath={path || "/"}
+          onClose={() => setShowBrowser(false)}
+          onSelect={(selected) => {
+            setPath(selected);
+            setShowBrowser(false);
+          }}
+        />
       )}
     </WindowsDialog>
   );
