@@ -24,8 +24,9 @@ import { GpoLayout } from "../gpo/GpoLayout";
 import { DnsLayout } from "../dns/DnsLayout";
 import { SitesLayout } from "../sites/SitesLayout";
 import { PrintLayout } from "../print/PrintLayout";
+import { FileSharesLayout } from "../fileshares/FileSharesLayout";
 
-type Tab = "directory" | "gpo" | "dns" | "sites" | "print";
+type Tab = "directory" | "gpo" | "dns" | "sites" | "print" | "fileshares";
 
 const TAB_LABEL_KEYS: Record<Tab, string> = {
   directory: "nav.activeDirectory",
@@ -33,8 +34,9 @@ const TAB_LABEL_KEYS: Record<Tab, string> = {
   dns: "nav.dns",
   sites: "nav.sites",
   print: "nav.print",
+  fileshares: "nav.fileShares",
 };
-const tabs: Tab[] = ["directory", "gpo", "dns", "sites", "print"];
+const tabs: Tab[] = ["directory", "gpo", "dns", "sites", "print", "fileshares"];
 
 export function ExplorerLayout({ username, onLoggedOut }: { username: string; onLoggedOut: () => void }) {
   const { t } = useTranslation();
@@ -104,6 +106,7 @@ export function ExplorerLayout({ username, onLoggedOut }: { username: string; on
         {activeTab === "dns" && <DnsLayout />}
         {activeTab === "sites" && <SitesLayout />}
         {activeTab === "print" && <PrintLayout />}
+        {activeTab === "fileshares" && <FileSharesLayout />}
       </div>
     </div>
   );

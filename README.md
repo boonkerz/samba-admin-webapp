@@ -72,6 +72,12 @@ exact functional match for it, not a reinvention.
   driver distribution via Group Policy Preferences, with a picker that
   resolves printer hostnames to IPs (DNS, falling back to NetBIOS) for the
   GPO printer connection dialogs.
+- **File Shares (Shared Folders equivalent)** — create/edit/delete
+  general-purpose SMB file shares, with a "Select User or Group" object
+  picker (searching real AD accounts, plus well-known principals like
+  Everyone) for both **Share Permissions** (`sharesec`) and filesystem
+  **Security** permissions (POSIX ACLs via `setfacl`/`getfacl`, applied to
+  new files/subfolders too).
 - **Server health dashboard** — FSMO role holders, replication status,
   `dbcheck`, disk usage, time sync, print server state, SYSVOL/print sync
   status, plus one-click backup and DC removal.

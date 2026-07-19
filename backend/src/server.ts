@@ -13,6 +13,7 @@ import { printRouter } from "./print/print.routes.js";
 import { eventLogRouter } from "./eventlog/eventlog.routes.js";
 import { demoteRouter } from "./setup/demote.routes.js";
 import { backupRouter } from "./setup/backup.routes.js";
+import { fileSharesRouter } from "./fileshares/fileshares.routes.js";
 import { config } from "./config.js";
 
 export function createServer(): express.Express {
@@ -35,6 +36,7 @@ export function createServer(): express.Express {
   app.use("/api/eventlog", eventLogRouter);
   app.use("/api/demote", demoteRouter);
   app.use("/api/backup", backupRouter);
+  app.use("/api/fileshares", fileSharesRouter);
 
   if (existsSync(config.frontendDistPath)) {
     app.use(express.static(config.frontendDistPath));

@@ -58,6 +58,18 @@ const ALLOWED_COMMANDS = new Set([
   // SYSVOL replication between DCs — extracting the tar snapshot smbclient
   // pulls from the PDC emulator. Part of the base OS, no new install needed.
   "tar",
+  // File Shares: share-level permissions ("Share Permissions" tab equivalent).
+  "sharesec",
+  // File Shares: sharesec's own trustee-name resolution doesn't work
+  // reliably (confirmed live: "failed to convert '<name>' to SID" even for
+  // a name `wbinfo`/`getent` resolve fine) — this app resolves names to/from
+  // SIDs itself via wbinfo before ever calling sharesec.
+  "wbinfo",
+  // File Shares: filesystem ("NTFS-style") permissions on a share's
+  // underlying path, via POSIX ACLs — already installed (the `acl` package
+  // is in the base preflight/package list for GPO SYSVOL ACL support).
+  "setfacl",
+  "getfacl",
 ]);
 
 export interface ExecResult {

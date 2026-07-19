@@ -79,7 +79,10 @@ export type JobKind =
   | "gpo-create"
   | "gpo-copy"
   | "gpo-restore"
-  | "print-server-setup";
+  | "print-server-setup"
+  | "fileshare-create"
+  | "fileshare-update"
+  | "fileshare-delete";
 
 export type JobStatus = "running" | "succeeded" | "failed";
 
