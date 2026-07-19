@@ -1,4 +1,5 @@
 import type { PrintSyncStatus } from "./print.js";
+import type { CommonItemOptions } from "./gpp-common.js";
 
 export type DirectoryObjectType = "domain" | "ou" | "container" | "user" | "group" | "computer";
 
@@ -490,6 +491,7 @@ export interface DriveMapPreference {
   /** Single uppercase drive letter (e.g. "S"), only meaningful when useLetter is true. */
   letter?: string;
   persistent: boolean;
+  common: CommonItemOptions;
 }
 
 export type CreateDriveMapPreferenceRequest = Omit<DriveMapPreference, "uid" | "order">;

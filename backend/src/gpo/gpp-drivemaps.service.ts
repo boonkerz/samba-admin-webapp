@@ -5,6 +5,7 @@ import type ldap from "ldapjs";
 import type { DriveMapPreference } from "@samba-admin/shared";
 import { getSysvolPath, bumpGpoVersion, fixNewSysvolDirAcl } from "./gpo-editor.service.js";
 import { search, modify, buildChange, attrString } from "../directory/ldapClient.js";
+import { parseFilters, buildFiltersXml, parseCommonAttrs, buildCommonAttrs, withApplyOnce, hasApplyOnce } from "./gpp-filters.js";
 
 // GPP Drive Maps preference CLSIDs, from the official [MS-GPPREF] Mapped
 // Drives XML example.
@@ -97,6 +98,8 @@ function parseDrivesXml(content: string): DriveMapPreference[] {
     const attrs = extractAttrs(attrsText);
     const propsMatch = /<Properties\b([^>]*)\/?>/.exec(inner);
     const props = propsMatch ? extractAttrs(propsMatch[1]) : {};
+    const filtersMatch = /<Filters>([\s\S]*?)<\/Filters>/.exec(inner);
+    const targeting = parseFilters(filtersMatch?.[1]);
 
     items.push({
       uid: (attrs.uid ?? "").replace(/[{}]/g, ""),
@@ -107,6 +110,7 @@ function parseDrivesXml(content: string): DriveMapPreference[] {
       useLetter: bool(props.useLetter),
       letter: props.letter || undefined,
       persistent: bool(props.persistent),
+      common: { ...parseCommonAttrs(attrs), applyOnce: hasApplyOnce(targeting), targeting },
     });
   }
 
@@ -125,12 +129,18 @@ function buildDrivesXml(items: DriveMapPreference[]): string {
   const body = items
     .map((item) => {
       const driveName = item.useLetter && item.letter ? `${item.letter}:` : item.path;
+      const targeting = withApplyOnce(item.common.targeting, item.common.applyOnce);
+      const commonAttrs = buildCommonAttrs(item.common);
+      const commonAttrsStr = Object.entries(commonAttrs)
+        .map(([k, v]) => ` ${k}="${escapeXml(v)}"`)
+        .join("");
       return (
         `<Drive clsid="${DRIVE_ITEM_CLSID}" name="${escapeXml(driveName)}" status="${escapeXml(driveName)}" ` +
-        `image="2" changed="${now}" uid="{${item.uid}}">` +
+        `image="2" changed="${now}" uid="{${item.uid}}"${commonAttrsStr}>` +
         `<Properties action="${item.action}" thisDrive="NOCHANGE" allDrives="NOCHANGE" userName="" cpassword="" ` +
         `path="${escapeXml(item.path)}" label="${escapeXml(item.label ?? "")}" persistent="${boolAttr(item.persistent)}" ` +
         `useLetter="${boolAttr(item.useLetter)}" letter="${escapeXml(item.letter ?? "")}"/>` +
+        `${buildFiltersXml(targeting)}` +
         `</Drive>`
       );
     })

@@ -5,3 +5,4 @@ export * from "./types/dns.js";
 export * from "./types/print.js";
 export * from "./types/eventlog.js";
 export * from "./types/fileshares.js";
+export * from "./types/gpp-common.js";
