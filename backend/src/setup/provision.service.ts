@@ -7,7 +7,9 @@ import { writeProvisionMarker } from "../state/provisionState.js";
 import { config } from "../config.js";
 import { getForwarders } from "../dns/dns-forwarders.service.js";
 
-const REALM_RE = /^[A-Z0-9]([A-Z0-9-]{0,61}[A-Z0-9])?(\.[A-Z0-9]([A-Z0-9-]{0,61}[A-Z0-9])?)+$/;
+// Exported for reuse by join.service.ts — the "join an existing domain"
+// flow needs the same realm format check.
+export const REALM_RE = /^[A-Z0-9]([A-Z0-9-]{0,61}[A-Z0-9])?(\.[A-Z0-9]([A-Z0-9-]{0,61}[A-Z0-9])?)+$/;
 const NETBIOS_RE = /^[A-Z0-9][A-Z0-9-]{0,14}$/;
 
 function passwordComplexityOk(password: string): boolean {
@@ -41,7 +43,8 @@ export function validateProvisionParams(
   return { valid: Object.keys(errors).length === 0, errors };
 }
 
-function detectPrimaryIp(): string {
+// Exported for reuse by join.service.ts.
+export function detectPrimaryIp(): string {
   const interfaces = os.networkInterfaces();
   for (const name of Object.keys(interfaces)) {
     if (name === "lo") continue;
@@ -119,6 +122,11 @@ async function runProvisionSteps(ctx: JobContext, params: ProvisionParams): Prom
   await ctx.runQuick("systemctl", ["daemon-reload"]);
 
   ctx.log("Masking classic smbd/nmbd/winbind services (AD DC role uses the unified samba-ad-dc service)...");
+  // `mask` alone only blocks *future* starts — it does not stop an instance
+  // already running (confirmed live: a leftover nmbd from before this step
+  // held /run/samba/nmbd.pid, causing samba-ad-dc's own embedded nmbd to
+  // fail to start with "nmbd is already running"). Stop first.
+  await ctx.runQuick("systemctl", ["stop", "smbd", "nmbd", "winbind"]);
   await ctx.runQuick("systemctl", ["mask", "smbd", "nmbd", "winbind"]);
   await ctx.runQuick("systemctl", ["unmask", "samba-ad-dc"]);
   await ctx.runQuick("systemctl", ["enable", "--now", "samba-ad-dc"]);

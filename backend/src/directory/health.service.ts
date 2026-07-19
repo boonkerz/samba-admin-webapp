@@ -1,6 +1,8 @@
 import { runCapture } from "../exec/safeExec.js";
 import type { DbcheckResult, DiskUsageEntry, FsmoRoleHolders, ReplicationNeighbor, ServerHealthSummary } from "@samba-admin/shared";
 import { checkTimeSync } from "../setup/timeSyncCheck.js";
+import { getSysvolSyncStatus } from "../setup/sysvolSync.service.js";
+import { getPrintSyncStatus } from "../print/printSync.service.js";
 
 const FSMO_ROLE_KEYS: Record<string, keyof FsmoRoleHolders> = {
   SchemaMasterRole: "schemaMaster",
@@ -142,6 +144,8 @@ export async function getServerHealth(): Promise<ServerHealthSummary> {
     timeSyncService: timeSync.service,
     timeSyncNote: timeSync.containerCapabilityNote,
     samba: { active: sambaActiveResult.stdout.trim() === "active" },
+    sysvolSync: getSysvolSyncStatus(),
+    printSync: getPrintSyncStatus(),
     generatedAt: new Date().toISOString(),
   };
 }

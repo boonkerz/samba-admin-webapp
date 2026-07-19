@@ -1,10 +1,12 @@
 import { Fragment, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import type { PrintServerStatus, ServerHealthSummary } from "@samba-admin/shared";
+import type { PrintServerStatus, PrintSyncStatus, ServerHealthSummary, SysvolSyncStatus } from "@samba-admin/shared";
 import { api } from "../api/client";
 import { PrintServerEnablePanel } from "../print/PrintServerEnablePanel";
 import { WindowsDialog, WindowsButton } from "./WindowsDialog";
+import { DemoteDialog } from "./DemoteDialog";
+import { BackupDialog } from "./BackupDialog";
 
 const FSMO_ROLE_ORDER: { key: keyof ServerHealthSummary["fsmoRoles"]; labelKey: string }[] = [
   { key: "schemaMaster", labelKey: "health.fsmo.schemaMaster" },
@@ -30,6 +32,40 @@ function StatusBadge({ ok, okLabel, badLabel }: { ok: boolean; okLabel: string; 
   );
 }
 
+/** Shared shape between SYSVOL and print-server sync status (see sysvolSync.service.ts / printSync.service.ts) — both are "PDC emulator is the single source, everyone else pulls from it" loops. */
+function SyncStatusBlock({
+  status,
+  sourceLabel,
+  unavailableLabel,
+  okLabel,
+  failedLabel,
+  fromLabel,
+}: {
+  status: SysvolSyncStatus | PrintSyncStatus;
+  sourceLabel: string;
+  unavailableLabel: string;
+  okLabel: string;
+  failedLabel: string;
+  fromLabel: (dc: string) => string;
+}) {
+  if (status.role === "source") {
+    return <div className="text-sm text-slate-600 dark:text-slate-400">{sourceLabel}</div>;
+  }
+  if (status.role === "unavailable") {
+    return <div className="text-sm text-slate-500 dark:text-slate-400">{unavailableLabel}</div>;
+  }
+  return (
+    <div className="space-y-1 text-sm">
+      <div className="flex items-center gap-3">
+        <StatusBadge ok={!!status.lastSyncOk} okLabel={okLabel} badLabel={failedLabel} />
+        {status.sourceDc && <span className="text-slate-600 dark:text-slate-400">{fromLabel(status.sourceDc)}</span>}
+        {status.lastSyncAt && <span className="text-xs text-slate-400">{new Date(status.lastSyncAt).toLocaleString()}</span>}
+      </div>
+      {status.lastError && <div className="text-xs text-red-600 dark:text-red-400">{status.lastError}</div>}
+    </div>
+  );
+}
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
@@ -43,6 +79,8 @@ export function ServerHealthDialog({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [showPrintSetup, setShowPrintSetup] = useState(false);
+  const [showDemote, setShowDemote] = useState(false);
+  const [showBackup, setShowBackup] = useState(false);
 
   const healthQuery = useQuery({
     queryKey: ["server-health"],
@@ -169,6 +207,31 @@ export function ServerHealthDialog({ onClose }: { onClose: () => void }) {
             )}
           </Section>
 
+          <Section title={t("health.sysvolSyncTitle", "SYSVOL-Replikation")}>
+            <SyncStatusBlock
+              status={health.sysvolSync}
+              sourceLabel={t("health.sysvolSyncSource", "Dieser DC hält die PDC-Emulator-Rolle und ist die maßgebliche SYSVOL-Quelle.")}
+              unavailableLabel={t("health.sysvolSyncUnavailable", "Noch nicht ermittelt.")}
+              okLabel={t("health.sysvolSyncOk", "Synchronisiert")}
+              failedLabel={t("health.sysvolSyncFailed", "Fehlgeschlagen")}
+              fromLabel={(dc) => t("health.sysvolSyncFrom", "von {{dc}}", { dc })}
+            />
+          </Section>
+
+          <Section title={t("health.printSyncTitle", "Drucker-Replikation")}>
+            <SyncStatusBlock
+              status={health.printSync}
+              sourceLabel={t(
+                "health.printSyncSource",
+                "Dieser DC hält die PDC-Emulator-Rolle und ist die maßgebliche Quelle für Druckerwarteschlangen und Treiber-Bibliothek."
+              )}
+              unavailableLabel={t("health.printSyncUnavailable", "Noch nicht ermittelt.")}
+              okLabel={t("health.printSyncOk", "Synchronisiert")}
+              failedLabel={t("health.printSyncFailed", "Fehlgeschlagen")}
+              fromLabel={(dc) => t("health.printSyncFrom", "von {{dc}}", { dc })}
+            />
+          </Section>
+
           <Section title={t("health.dbcheckTitle", "Datenbankprüfung (dbcheck)")}>
             <div className="flex items-center gap-3 text-sm">
               <span className="text-slate-800 dark:text-slate-200">
@@ -192,12 +255,16 @@ export function ServerHealthDialog({ onClose }: { onClose: () => void }) {
             )}
           </Section>
 
-          <Section title="Druckserver">
+          <Section title={t("health.printServer", "Druckserver")}>
             <div className="flex items-center gap-3 text-sm">
-              <StatusBadge ok={!!printStatusQuery.data?.ready} okLabel="Eingerichtet" badLabel="Nicht eingerichtet" />
+              <StatusBadge
+                ok={!!printStatusQuery.data?.ready}
+                okLabel={t("health.printServerReady", "Eingerichtet")}
+                badLabel={t("health.printServerNotReady", "Nicht eingerichtet")}
+              />
               {!printStatusQuery.data?.ready && !showPrintSetup && (
                 <button className="text-sm text-indigo-600 hover:underline dark:text-indigo-400" onClick={() => setShowPrintSetup(true)}>
-                  Einrichten...
+                  {t("health.printServerSetUp", "Einrichten...")}
                 </button>
               )}
             </div>
@@ -211,10 +278,33 @@ export function ServerHealthDialog({ onClose }: { onClose: () => void }) {
             )}
           </Section>
 
+          <Section title={t("health.backupTitle", "Sicherung")}>
+            <button className="text-sm text-indigo-600 hover:underline dark:text-indigo-400" onClick={() => setShowBackup(true)}>
+              {t("health.backupOpen", "Sicherungen verwalten...")}
+            </button>
+          </Section>
+
+          <Section title={t("health.dangerZoneTitle", "Gefahrenzone")}>
+            <button className="text-sm text-red-600 hover:underline dark:text-red-400" onClick={() => setShowDemote(true)}>
+              {t("health.demoteOpen", "Domain Controller entfernen...")}
+            </button>
+          </Section>
+
           <div className="text-right text-xs text-slate-400">
             {t("health.generatedAt", "Stand: {{date}}", { date: new Date(health.generatedAt).toLocaleString() })}
           </div>
         </div>
+      )}
+
+      {showBackup && <BackupDialog onClose={() => setShowBackup(false)} />}
+      {showDemote && health && (
+        <DemoteDialog
+          hostname={health.hostname}
+          onClose={() => {
+            setShowDemote(false);
+            queryClient.invalidateQueries({ queryKey: ["server-health"] });
+          }}
+        />
       )}
     </WindowsDialog>
   );

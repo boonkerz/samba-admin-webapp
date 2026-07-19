@@ -11,7 +11,8 @@
     "logout": "Sign out",
     "auditLog": "Audit Log",
     "health": "Server Status",
-    "print": "Printers"
+    "print": "Printers",
+    "eventViewer": "Event Viewer"
   },
   "auditLog": {
     "title": "Audit Log",
@@ -24,6 +25,20 @@
     "target": "Target",
     "detail": "Detail",
     "empty": "No entries."
+  },
+  "eventViewer": {
+    "title": "Event Viewer",
+    "allLevels": "All levels",
+    "allSources": "All sources",
+    "searchPlaceholder": "Search...",
+    "level": "Level",
+    "time": "Time",
+    "source": "Source",
+    "message": "Message",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "empty": "No events."
   },
   "health": {
     "title": "Server Status",
@@ -60,12 +75,32 @@
     "sourceDsa": "Source DSA",
     "lastSuccess": "Last Success",
     "failures": "Failures",
+    "sysvolSyncTitle": "SYSVOL Replication",
+    "sysvolSyncSource": "This DC holds the PDC emulator role and is the authoritative SYSVOL source.",
+    "sysvolSyncUnavailable": "Not yet determined.",
+    "sysvolSyncOk": "Synced",
+    "sysvolSyncFailed": "Failed",
+    "sysvolSyncFrom": "from {{dc}}",
+    "printSyncTitle": "Printer Replication",
+    "printSyncSource": "This DC holds the PDC emulator role and is the authoritative source for printer queues and the driver library.",
+    "printSyncUnavailable": "Not yet determined.",
+    "printSyncOk": "Synced",
+    "printSyncFailed": "Failed",
+    "printSyncFrom": "from {{dc}}",
+    "backupTitle": "Backup",
+    "backupOpen": "Manage backups...",
+    "dangerZoneTitle": "Danger Zone",
+    "demoteOpen": "Remove domain controller...",
     "dbcheckTitle": "Database Check (dbcheck)",
     "dbcheckSummary": "{{checked}} objects checked",
     "noErrors": "No errors",
     "errorsFound": "{{count}} errors",
     "dbcheckNotes": "{{count}} notes",
-    "generatedAt": "As of: {{date}}"
+    "generatedAt": "As of: {{date}}",
+    "printServer": "Print Server",
+    "printServerReady": "Configured",
+    "printServerNotReady": "Not configured",
+    "printServerSetUp": "Set up..."
   },
   "theme": {
     "light": "Light",

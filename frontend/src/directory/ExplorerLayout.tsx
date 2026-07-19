@@ -15,6 +15,7 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { LanguageToggle } from "../components/LanguageToggle";
 import { AuditLogDialog } from "../components/AuditLogDialog";
 import { ServerHealthDialog } from "../components/ServerHealthDialog";
+import { EventViewerDialog } from "../components/EventViewerDialog";
 import { ResizeHandle } from "../components/ResizeHandle";
 import { useResizablePane } from "../hooks/useResizablePane";
 import { useDirectoryStore } from "../state/directoryStore";
@@ -44,6 +45,7 @@ export function ExplorerLayout({ username, onLoggedOut }: { username: string; on
   const [moveObject, setMoveObject] = useState<DirectoryObjectSummary>();
   const [showAuditLog, setShowAuditLog] = useState(false);
   const [showHealth, setShowHealth] = useState(false);
+  const [showEventViewer, setShowEventViewer] = useState(false);
 
   async function logout() {
     await api.post("/api/auth/logout");
@@ -73,6 +75,7 @@ export function ExplorerLayout({ username, onLoggedOut }: { username: string; on
         </div>
         <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
           <Button variant="ghost" onClick={() => setShowHealth(true)}>{t("nav.health")}</Button>
+          <Button variant="ghost" onClick={() => setShowEventViewer(true)}>{t("nav.eventViewer")}</Button>
           <Button variant="ghost" onClick={() => setShowAuditLog(true)}>{t("nav.auditLog")}</Button>
           <LanguageToggle />
           <ThemeToggle />
@@ -83,6 +86,7 @@ export function ExplorerLayout({ username, onLoggedOut }: { username: string; on
 
       {showAuditLog && <AuditLogDialog onClose={() => setShowAuditLog(false)} />}
       {showHealth && <ServerHealthDialog onClose={() => setShowHealth(false)} />}
+      {showEventViewer && <EventViewerDialog onClose={() => setShowEventViewer(false)} />}
 
       <div className="flex-1 overflow-hidden">
         {activeTab === "directory" && (

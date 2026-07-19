@@ -94,17 +94,34 @@ The wizard runs once:
    conflicts, hostname/hosts sanity, time sync, firewall), then installs the
    Samba AD DC package set, with an optional prompt to also set up the CUPS
    print server.
-2. **Provisioning** — collect realm, NetBIOS domain name, and administrator
-   password, then runs `samba-tool domain provision` and the required
-   post-steps (service masking, krb5.conf, DNS resolution incl. a fallback
-   nameserver so the box keeps working even if internal DNS hiccups,
-   verification).
+2. **Configuration** — pick one of three modes: create a new forest
+   (`samba-tool domain provision` plus post-steps: service masking,
+   krb5.conf, DNS resolution incl. a fallback nameserver, verification),
+   **join an existing domain** as an additional, replicating DC
+   (`samba-tool domain join`), or **restore from a backup file** (see
+   below) to rebuild a domain from scratch after total DC loss.
 3. **Finish** — summary, optional reboot, then redirects to the login page.
 
 After that, log in with the Domain Administrator account to reach the
 management UI. Re-running the wizard is blocked once a domain has been
 provisioned (replaying it would destroy the domain) — the API returns `409`
 and the frontend routes straight to the login page.
+
+## Backup, restore, and removing a DC
+
+- **Backup**: the server health dashboard's "Manage backups..." button runs
+  `samba-tool domain backup online` on demand (using the logged-in admin's
+  own credentials, for full NTACL fidelity) and lists existing backups for
+  download.
+- **Restore**: feed a downloaded backup file back into the setup wizard's
+  "Restore from backup" mode on a fresh (unprovisioned) server to rebuild
+  the domain from scratch — the standard Samba disaster-recovery path when
+  every DC has been lost. The new server needs a name not already used by
+  any DC or computer account in the backup snapshot.
+- **Remove a domain controller**: the health dashboard's "Remove domain
+  controller..." button is a "DCPROMO uninstall" equivalent — it refuses on
+  the last DC in a domain, otherwise demotes this DC out cleanly and
+  returns the box to a bare, re-provisionable state.
 
 ## Operating notes
 

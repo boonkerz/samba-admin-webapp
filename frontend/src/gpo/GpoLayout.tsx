@@ -1,6 +1,6 @@
 import { useState, type MouseEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { GpoObject, DomainInfo, GpoLink } from "@samba-admin/shared";
+import type { GpoObject, DomainInfo, GpoLink, GpoOuTreeNode } from "@samba-admin/shared";
 import { api, encodeDn } from "../api/client";
 import { GpoEditor } from "./GpoEditor";
 import { GpoPropertiesView } from "./GpoPropertiesView";
@@ -20,7 +20,7 @@ type TreeNode =
   | { type: "domain"; name: string; dnsName: string; netbiosName: string }
   | { type: "domain-root"; name: string }
   | { type: "gpo"; gpo: GpoObject }
-  | { type: "ou"; dn: string; name: string; childOus: { dn: string; name: string }[] }
+  | { type: "ou"; dn: string; name: string; childOus: GpoOuTreeNode[] }
   | { type: "container"; name: string }
   | { type: "sites" }
   | { type: "gpo-modeling" }
@@ -68,7 +68,7 @@ export function GpoLayout() {
 
   const ouTreeQuery = useQuery({
     queryKey: ["gpo-ou-tree"],
-    queryFn: () => api.get<{ dn: string; name: string; childOus: { dn: string; name: string }[] }[]>("/api/directory/ou-tree"),
+    queryFn: () => api.get<GpoOuTreeNode[]>("/api/directory/ou-tree"),
   });
 
   const domain = domainQuery.data;
@@ -554,7 +554,7 @@ function OuTreeNode({
   gpos,
   depth,
 }: {
-  ou: { dn: string; name: string; childOus: { dn: string; name: string }[] };
+  ou: GpoOuTreeNode;
   expandedNodes: Set<string>;
   onToggle: (key: string) => void;
   onSelect: (node: TreeNode) => void;
@@ -589,13 +589,16 @@ function OuTreeNode({
             onDoubleClick={onDoubleClickGpo}
           />
           {ou.childOus.map((child) => (
-            <TreeViewItem
+            <OuTreeNode
               key={child.dn}
-              label={child.name}
-              type="ou"
-              onSelect={() => onSelect({ type: "ou", dn: child.dn, name: child.name, childOus: [] })}
-              onContextMenu={(e) => onContextMenu(e, { dn: child.dn, name: child.name })}
-              selected={selectedNode?.type === "ou" && selectedNode.dn === child.dn}
+              ou={child}
+              expandedNodes={expandedNodes}
+              onToggle={onToggle}
+              onSelect={onSelect}
+              onContextMenu={onContextMenu}
+              onDoubleClickGpo={onDoubleClickGpo}
+              selectedNode={selectedNode}
+              gpos={gpos}
               depth={depth + 1}
             />
           ))}

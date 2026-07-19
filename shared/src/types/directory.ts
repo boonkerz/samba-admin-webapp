@@ -1,3 +1,5 @@
+import type { PrintSyncStatus } from "./print.js";
+
 export type DirectoryObjectType = "domain" | "ou" | "container" | "user" | "group" | "computer";
 
 export interface TreeNode {
@@ -5,6 +7,13 @@ export interface TreeNode {
   name: string;
   type: DirectoryObjectType;
   hasChildren: boolean;
+}
+
+/** The OU tree as browsed from the Group Policy Management view (for picking where to link a GPO) — recurses to full depth, unlike the generic directory TreeNode above which is lazily expanded one level at a time. */
+export interface GpoOuTreeNode {
+  dn: string;
+  name: string;
+  childOus: GpoOuTreeNode[];
 }
 
 export interface DirectoryObjectSummary {
@@ -1283,6 +1292,26 @@ export interface DbcheckResult {
   notes: string[];
 }
 
+/**
+ * Status of this app's own SYSVOL replication loop — Samba has no built-in
+ * equivalent of Windows FRS/DFSR, so on a multi-DC domain this in-process
+ * background sync is what keeps GPOs and the ADMX Central Store consistent
+ * across DCs. "source" = this DC holds the PDC emulator role (the single
+ * authoritative copy, nothing to pull); "replica" = this DC periodically
+ * pulls from the PDC emulator; "unavailable" = not yet determined (e.g.
+ * right after boot, or FSMO lookup failed).
+ */
+export type SysvolSyncRole = "source" | "replica" | "unavailable";
+
+export interface SysvolSyncStatus {
+  role: SysvolSyncRole;
+  /** Hostname of the PDC-emulator DC this replica pulls from (only set when role === "replica"). */
+  sourceDc?: string;
+  lastSyncAt?: string;
+  lastSyncOk?: boolean;
+  lastError?: string;
+}
+
 export interface ServerHealthSummary {
   hostname: string;
   sambaVersion: string;
@@ -1296,6 +1325,8 @@ export interface ServerHealthSummary {
   /** Set when inactive specifically because of a missing container capability (e.g. LXC without CAP_SYS_TIME) rather than a real problem. */
   timeSyncNote?: string;
   samba: { active: boolean };
+  sysvolSync: SysvolSyncStatus;
+  printSync: PrintSyncStatus;
   generatedAt: string;
 }
 

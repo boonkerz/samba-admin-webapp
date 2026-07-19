@@ -53,6 +53,11 @@ const ALLOWED_COMMANDS = new Set([
   "nmblookup",
   // Extracting uploaded third-party ADMX template bundles (Chrome, Adobe, ...).
   "unzip",
+  // Event Viewer — reads systemd service logs (samba-ad-dc, smbd, cups, ...).
+  "journalctl",
+  // SYSVOL replication between DCs — extracting the tar snapshot smbclient
+  // pulls from the PDC emulator. Part of the base OS, no new install needed.
+  "tar",
 ]);
 
 export interface ExecResult {

@@ -1,5 +1,5 @@
 import type ldap from "ldapjs";
-import type { GpoLink, GpoObject, DomainInfo } from "@samba-admin/shared";
+import type { GpoLink, GpoObject, DomainInfo, GpoOuTreeNode } from "@samba-admin/shared";
 import { search, attrString } from "./ldapClient.js";
 
 const LINK_RE = /\[LDAP:\/\/([^;]+);(\d+)\]/g;
@@ -91,37 +91,28 @@ export async function getDomainInfo(client: ldap.Client, baseDn: string): Promis
 }
 
 /**
- * Gets OUs under a given parent DN for GPO linking.
+ * Gets OUs under a given parent DN for GPO linking, recursing to full depth
+ * — a GPO can be linked to an OU at any nesting level, not just the top two
+ * (confirmed live: a link on a third-level OU was silently invisible in the
+ * tree before this was made properly recursive).
  */
-export async function getOuTree(client: ldap.Client, baseDn: string): Promise<{ dn: string; name: string; childOus: { dn: string; name: string }[] }[]> {
+export async function getOuTree(client: ldap.Client, baseDn: string): Promise<GpoOuTreeNode[]> {
   const entries = await search(client, baseDn, {
     scope: "one",
     filter: "(objectClass=organizationalUnit)",
     attributes: ["ou", "dn"],
   });
 
-  const ous = entries.map((entry) => ({
-    dn: entry.dn,
-    name: attrString(entry.attributes, "ou") ?? entry.dn.split(",")[0].replace(/^OU=/, ""),
-    childOus: [] as { dn: string; name: string }[],
-  }));
-
-  // Get child OUs for each OU
-  for (const ou of ous) {
-    try {
-      const children = await search(client, ou.dn, {
-        scope: "one",
-        filter: "(objectClass=organizationalUnit)",
-        attributes: ["ou"],
-      });
-      ou.childOus = children.map((child) => ({
-        dn: child.dn,
-        name: attrString(child.attributes, "ou") ?? child.dn.split(",")[0].replace(/^OU=/, ""),
-      }));
-    } catch {
-      // Ignore errors
-    }
-  }
-
-  return ous;
+  return Promise.all(
+    entries.map(async (entry) => {
+      const name = attrString(entry.attributes, "ou") ?? entry.dn.split(",")[0].replace(/^OU=/, "");
+      let childOus: GpoOuTreeNode[] = [];
+      try {
+        childOus = await getOuTree(client, entry.dn);
+      } catch {
+        // Ignore errors — an OU whose children can't be listed just shows as a leaf.
+      }
+      return { dn: entry.dn, name, childOus };
+    })
+  );
 }

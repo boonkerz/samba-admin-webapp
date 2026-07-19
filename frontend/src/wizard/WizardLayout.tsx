@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-const STEPS = ["Pakete", "Provisionierung", "Druckserver", "Fertig"];
+const STEPS = ["Pakete", "Konfiguration", "Druckserver", "Fertig"];
 
 export function WizardLayout({ activeStep, children }: { activeStep: number; children: ReactNode }) {
   return (

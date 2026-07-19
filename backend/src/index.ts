@@ -4,10 +4,14 @@ import { readFileSync } from "node:fs";
 import { createServer } from "./server.js";
 import { config } from "./config.js";
 import { ensureTlsCertificate } from "./tls.js";
+import { startSysvolSyncLoop } from "./setup/sysvolSync.service.js";
+import { startPrintSyncLoop } from "./print/printSync.service.js";
 
 async function main(): Promise<void> {
   const { certPath, keyPath } = await ensureTlsCertificate();
   const app = createServer();
+  startSysvolSyncLoop();
+  startPrintSyncLoop();
 
   https
     .createServer({ cert: readFileSync(certPath), key: readFileSync(keyPath) }, app)

@@ -11,7 +11,8 @@
     "logout": "Abmelden",
     "auditLog": "Protokoll",
     "health": "Serverstatus",
-    "print": "Drucker"
+    "print": "Drucker",
+    "eventViewer": "Ereignisanzeige"
   },
   "auditLog": {
     "title": "Protokoll",
@@ -24,6 +25,20 @@
     "target": "Ziel",
     "detail": "Details",
     "empty": "Keine Einträge."
+  },
+  "eventViewer": {
+    "title": "Ereignisanzeige",
+    "allLevels": "Alle Ebenen",
+    "allSources": "Alle Quellen",
+    "searchPlaceholder": "Suchen...",
+    "level": "Ebene",
+    "time": "Zeitpunkt",
+    "source": "Quelle",
+    "message": "Meldung",
+    "error": "Fehler",
+    "warning": "Warnung",
+    "info": "Information",
+    "empty": "Keine Ereignisse."
   },
   "health": {
     "title": "Serverstatus",
@@ -60,12 +75,32 @@
     "sourceDsa": "Quell-DSA",
     "lastSuccess": "Letzter Erfolg",
     "failures": "Fehlversuche",
+    "sysvolSyncTitle": "SYSVOL-Replikation",
+    "sysvolSyncSource": "Dieser DC hält die PDC-Emulator-Rolle und ist die maßgebliche SYSVOL-Quelle.",
+    "sysvolSyncUnavailable": "Noch nicht ermittelt.",
+    "sysvolSyncOk": "Synchronisiert",
+    "sysvolSyncFailed": "Fehlgeschlagen",
+    "sysvolSyncFrom": "von {{dc}}",
+    "printSyncTitle": "Drucker-Replikation",
+    "printSyncSource": "Dieser DC hält die PDC-Emulator-Rolle und ist die maßgebliche Quelle für Druckerwarteschlangen und Treiber-Bibliothek.",
+    "printSyncUnavailable": "Noch nicht ermittelt.",
+    "printSyncOk": "Synchronisiert",
+    "printSyncFailed": "Fehlgeschlagen",
+    "printSyncFrom": "von {{dc}}",
+    "backupTitle": "Sicherung",
+    "backupOpen": "Sicherungen verwalten...",
+    "dangerZoneTitle": "Gefahrenzone",
+    "demoteOpen": "Domain Controller entfernen...",
     "dbcheckTitle": "Datenbankprüfung (dbcheck)",
     "dbcheckSummary": "{{checked}} Objekte geprüft",
     "noErrors": "Keine Fehler",
     "errorsFound": "{{count}} Fehler",
     "dbcheckNotes": "{{count}} Hinweise",
-    "generatedAt": "Stand: {{date}}"
+    "generatedAt": "Stand: {{date}}",
+    "printServer": "Druckserver",
+    "printServerReady": "Eingerichtet",
+    "printServerNotReady": "Nicht eingerichtet",
+    "printServerSetUp": "Einrichten..."
   },
   "theme": {
     "light": "Hell",

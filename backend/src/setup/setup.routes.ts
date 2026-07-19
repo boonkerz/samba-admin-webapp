@@ -1,8 +1,14 @@
 import { Router } from "express";
+import multer from "multer";
+import os from "node:os";
+import path from "node:path";
+import fs from "node:fs/promises";
 import type {
   JobStartedResponse,
+  JoinDomainParams,
   PreflightFixRequest,
   ProvisionParams,
+  RestoreParams,
   SetupStateResponse,
 } from "@samba-admin/shared";
 import { getProvisionState, readProvisionSummary } from "../state/provisionState.js";
@@ -10,11 +16,17 @@ import { detectDistro } from "./distro.service.js";
 import { runPreflight, applyPreflightFixes } from "./preflight.service.js";
 import { startPackageInstallJob } from "./packages.service.js";
 import { startProvisionJob, validateProvisionParams } from "./provision.service.js";
+import { startJoinJob, validateJoinParams } from "./join.service.js";
+import { startRestoreJob, validateRestoreParams } from "./restore.service.js";
 import { getJobSnapshot, subscribeJob, isJobRunning } from "../jobs/jobRunner.js";
 import { initSseResponse, writeSseEvent } from "../sse/sseHub.js";
 import { runCapture } from "../exec/safeExec.js";
 
 export const setupRouter = Router();
+
+// Domain backups can be large — restore uploads need a generous limit,
+// unlike the small JSON/GPO payloads the rest of this app handles.
+const restoreUpload = multer({ dest: path.join(os.tmpdir(), "samba-admin-restore-uploads"), limits: { fileSize: 2 * 1024 * 1024 * 1024 } });
 
 /**
  * Blocks mutating wizard routes once the box is already provisioned (replaying
@@ -96,6 +108,49 @@ setupRouter.post("/provision", (req, res) => {
   const jobId = startProvisionJob(body);
   const response: JobStartedResponse = { jobId };
   res.json(response);
+});
+
+setupRouter.post("/join/validate", (req, res) => {
+  const params = req.body as JoinDomainParams;
+  res.json(validateJoinParams(params));
+});
+
+setupRouter.post("/join", (req, res) => {
+  if (isJobRunning()) {
+    return res.status(409).json({ error: "job-running", message: "A setup job is already running." });
+  }
+  const body = req.body as JoinDomainParams;
+  const validation = validateJoinParams(body);
+  if (!validation.valid) {
+    return res.status(400).json({ error: "invalid-params", message: "Join parameters are invalid.", errors: validation.errors });
+  }
+  const jobId = startJoinJob(body);
+  const response: JobStartedResponse = { jobId };
+  res.json(response);
+});
+
+setupRouter.post("/restore", restoreUpload.single("file"), async (req, res, next) => {
+  const file = req.file;
+  try {
+    if (isJobRunning()) {
+      return res.status(409).json({ error: "job-running", message: "A setup job is already running." });
+    }
+    if (!file) {
+      return res.status(400).json({ error: "bad-request", message: "Backup file required." });
+    }
+    const params: RestoreParams = { newServerName: String(req.body.newServerName ?? ""), hostIp: req.body.hostIp || undefined };
+    const validation = validateRestoreParams(params);
+    if (!validation.valid) {
+      await fs.rm(file.path, { force: true });
+      return res.status(400).json({ error: "invalid-params", message: "Restore parameters are invalid.", errors: validation.errors });
+    }
+    const jobId = startRestoreJob(file.path, params);
+    const response: JobStartedResponse = { jobId };
+    res.json(response);
+  } catch (err) {
+    if (file) await fs.rm(file.path, { force: true }).catch(() => {});
+    next(err);
+  }
 });
 
 setupRouter.get("/jobs/:jobId", (req, res) => {

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import path from "node:path";
 import type { ProvisionState, SetupSummary } from "@samba-admin/shared";
 import { runCapture } from "../exec/safeExec.js";
@@ -63,4 +63,12 @@ export function writeProvisionMarker(summary: SetupSummary): void {
 
 export function readProvisionSummary(): SetupSummary | undefined {
   return readMarker();
+}
+
+/** Clears the provision marker after a successful demote, so this app immediately reports "unprovisioned" again without needing a restart. */
+export function clearProvisionMarker(): void {
+  if (existsSync(config.provisionMarkerPath)) {
+    rmSync(config.provisionMarkerPath, { force: true });
+  }
+  cachedState = "unprovisioned";
 }

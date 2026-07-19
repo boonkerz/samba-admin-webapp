@@ -58,3 +58,23 @@ export interface WindowsDriverPackage {
   uploadedAt: string;
   installedInSamba: boolean;
 }
+
+/**
+ * Status of this app's own printer-config sync loop — mirrors
+ * SysvolSyncStatus's shape/semantics (see shared/src/types/directory.ts):
+ * the PDC emulator is the single authoritative source for print queue
+ * definitions and the uploaded driver library, every other DC pulls from
+ * it. Deliberately does NOT cover the actual Windows driver *registration*
+ * in Samba's print$ store (`rpcclient adddriver`/`setdriver`) — that needs
+ * real domain admin rights this app doesn't persist, so it stays a one-time
+ * manual "Treiber zuweisen" action per printer on each replica.
+ */
+export type PrintSyncRole = "source" | "replica" | "unavailable";
+
+export interface PrintSyncStatus {
+  role: PrintSyncRole;
+  sourceDc?: string;
+  lastSyncAt?: string;
+  lastSyncOk?: boolean;
+  lastError?: string;
+}

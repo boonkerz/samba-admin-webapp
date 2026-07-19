@@ -10,6 +10,9 @@ import { dnsRouter } from "./dns/dns.routes.js";
 import { sitesRouter } from "./directory/sites.routes.js";
 import { printServerRouter } from "./print/print-server.routes.js";
 import { printRouter } from "./print/print.routes.js";
+import { eventLogRouter } from "./eventlog/eventlog.routes.js";
+import { demoteRouter } from "./setup/demote.routes.js";
+import { backupRouter } from "./setup/backup.routes.js";
 import { config } from "./config.js";
 
 export function createServer(): express.Express {
@@ -29,6 +32,9 @@ export function createServer(): express.Express {
   app.use("/api/sites", sitesRouter);
   app.use("/api/print-server", printServerRouter);
   app.use("/api/print", printRouter);
+  app.use("/api/eventlog", eventLogRouter);
+  app.use("/api/demote", demoteRouter);
+  app.use("/api/backup", backupRouter);
 
   if (existsSync(config.frontendDistPath)) {
     app.use(express.static(config.frontendDistPath));

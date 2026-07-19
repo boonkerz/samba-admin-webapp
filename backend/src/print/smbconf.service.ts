@@ -143,6 +143,49 @@ export async function ensurePrintSharesConfigured(log: (text: string) => void): 
   return { changed: true, reloadMethod: "restart" };
 }
 
+const SYNC_SHARE_NAME = "admin-webapp-sync";
+
+const SYNC_SHARE_SECTION = `[${SYNC_SHARE_NAME}]
+	comment = Samba Admin Webapp - inter-DC sync data (printer config, driver library)
+	path = /var/lib/samba-admin-webapp
+	browseable = no
+	guest ok = no
+	read only = yes
+	valid users = @"Domain Controllers"
+`;
+
+/**
+ * Idempotently adds a read-only share exposing this app's own data directory
+ * to other domain controllers only (`@"Domain Controllers"` — the built-in
+ * AD group every DC's computer account belongs to automatically). Used by
+ * printSync.service.ts so a replica DC can pull the printer/driver library
+ * via its own machine-account trust, the same dependency-free mechanism
+ * sysvolSync.service.ts already uses against the built-in `[sysvol]` share —
+ * this one just needs to exist first, since nothing else would otherwise
+ * expose this app's own data directory over the network.
+ */
+export async function ensureSyncShareConfigured(): Promise<void> {
+  const original = readFileSync(SMB_CONF_PATH, "utf8");
+  if (hasSection(original, SYNC_SHARE_NAME)) return;
+
+  const patched = original.trimEnd() + "\n\n" + SYNC_SHARE_SECTION;
+
+  writeFileSync(SMB_CONF_NEW_PATH, patched);
+  const check = await runCapture("testparm", ["-s", SMB_CONF_NEW_PATH]);
+  if (check.exitCode !== 0 || /ERROR/i.test(check.stderr)) {
+    rmSync(SMB_CONF_NEW_PATH, { force: true });
+    throw new Error(`testparm rejected the patched smb.conf, aborting (original file untouched):\n${check.stdout}\n${check.stderr}`);
+  }
+
+  renameSync(SMB_CONF_NEW_PATH, SMB_CONF_PATH);
+  await runCapture("smbcontrol", ["smbd", "reload-config"]);
+
+  const listShares = await runCapture("smbclient", ["-L", "//127.0.0.1", "-U%", "-m", "SMB3"]);
+  if (!new RegExp(SYNC_SHARE_NAME, "i").test(listShares.stdout)) {
+    await runCapture("systemctl", ["restart", "samba-ad-dc"]);
+  }
+}
+
 export function smbConfHasPrintShares(): boolean {
   try {
     const content = readFileSync(SMB_CONF_PATH, "utf8");

@@ -20,9 +20,9 @@ single systemd service directly on the domain controller.
 | ![Group Policy scope tab](docs/screenshots/gpo-scope.png) | ![Group Policy Editor with imported Chrome ADMX templates](docs/screenshots/gpo-admx-chrome.png) |
 | Group Policy Management — scope, security filtering, links | Group Policy Editor — third-party ADMX templates (Chrome) imported and fully translated |
 | ![Group Policy policy detail editor](docs/screenshots/gpo-policy-detail.png) | ![Server health dashboard](docs/screenshots/server-status.png) |
-| Group Policy Editor — editing a single policy | Server health — FSMO roles, replication, dbcheck, print server, disk |
-| ![Audit log](docs/screenshots/audit-log.png) | |
-| Audit log of every administrative action | |
+| Group Policy Editor — editing a single policy | Server health — FSMO roles, replication, dbcheck, backup, remove-DC |
+| ![Event Viewer](docs/screenshots/event-viewer.png) | ![Audit log](docs/screenshots/audit-log.png) |
+| Event Viewer — the Samba/CUPS system journal, filterable by level and source | Audit log of every administrative action |
 
 ## Why
 
@@ -36,9 +36,21 @@ exact functional match for it, not a reinvention.
 
 - **Setup wizard** — package install (Debian/Ubuntu detected automatically),
   preflight checks (DNS port conflicts, hostname sanity, time sync,
-  firewall), `samba-tool domain provision`, and post-provision hardening —
-  end to end from a bare OS to a working domain, driven entirely from a
-  browser.
+  firewall), and three provisioning modes driven entirely from a browser:
+  create a new forest (`samba-tool domain provision`), **join an existing
+  domain** as an additional, replicating DC, or **restore a domain from a
+  backup file** onto a fresh server (disaster recovery).
+- **Remove a domain controller** — a "DCPROMO uninstall" equivalent: checks
+  it's safe to remove (refuses on the last DC in the domain), demotes it out
+  of the domain, and returns the box to a bare, re-provisionable state.
+- **Full domain backup/restore** — `samba-tool domain backup online` on
+  demand from the server health dashboard, downloadable, and feedable back
+  into the setup wizard's restore mode to rebuild a domain from scratch
+  after total DC loss.
+- **DC-to-DC replication for this app itself** — SYSVOL and print-server
+  configuration (CUPS queues, uploaded Windows drivers) automatically mirror
+  across every DC running this app, so a promoted replica is fully
+  self-sufficient, not just AD-replicated.
 - **Active Directory Users and Computers equivalent** — users, groups
   (including nested membership), organizational units, computer accounts,
   fine-grained password policies (PSOs), domain/forest trusts.
@@ -61,7 +73,10 @@ exact functional match for it, not a reinvention.
   resolves printer hostnames to IPs (DNS, falling back to NetBIOS) for the
   GPO printer connection dialogs.
 - **Server health dashboard** — FSMO role holders, replication status,
-  `dbcheck`, disk usage, time sync, print server state.
+  `dbcheck`, disk usage, time sync, print server state, SYSVOL/print sync
+  status, plus one-click backup and DC removal.
+- **Event Viewer equivalent** — the Samba/CUPS system journal (samba-ad-dc,
+  smbd, nmbd, winbind, cups), filterable by severity.
 - **Audit log** of every administrative action taken through the app.
 
 ## Architecture
